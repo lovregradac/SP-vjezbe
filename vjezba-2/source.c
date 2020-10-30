@@ -23,7 +23,6 @@ void insertAtEnd(Position where, Position what);
 void printPerson(Position person);
 void printList(Position head);
 
-
 int main(void) {
     Person head;
     Position what = NULL;
@@ -141,16 +140,15 @@ int deletePerson(Position head, Position pos){
 
     return 0;
 }
-void insertAtEnd(Position where, Position what){
 
+void insertAtEnd(Position where, Position what) {
     while (NULL != where->next) 
         where = where->next;
 
     insertAfter(where, what);
 }
 
-Position createPerson(char* firstName, char* lastName, int birthYear)
-{
+Position createPerson(char* firstName, char* lastName, int birthYear){
     Position p = NULL;
 
     p = (Position)malloc(sizeof(Person));
@@ -168,8 +166,7 @@ Position createPerson(char* firstName, char* lastName, int birthYear)
     p->next = NULL;
 }
 
-void insertAfter(Position where, Position what)
-{
+void insertAfter(Position where, Position what){
     what->next = where->next;
     where->next = what;
 }
