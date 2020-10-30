@@ -126,19 +126,22 @@ int deletePerson(Position head, Position pos){
         q = pos;
         head->next = NULL;
         free(q);
+        return 0;
     }
     else if (NULL == pos->next->next){
         q = pos->next;
         pos->next = NULL;
         free(q);
+        return 0;
     }
     else {
         q = pos->next;
         pos->next = pos->next->next;
         free(q);
+        return 0;
     }
 
-    return 0;
+    return 1;
 }
 
 void insertAtEnd(Position where, Position what) {
