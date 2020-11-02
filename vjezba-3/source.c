@@ -7,8 +7,7 @@
 
 struct _Person;
 typedef struct _Person* Position;
-typedef struct _Person
-{
+typedef struct _Person {
     char firstName[MAX_NAME];
     char lastName[MAX_NAME];
     int birthYear;
@@ -48,8 +47,7 @@ int main(void) {
     printf("8) Write list to file\n");
     printf("9) Read list from file\n");
 
-    while (1)
-    {
+    while (1) {
         printf("Choice: ");
         c = getchar();
 
@@ -125,10 +123,9 @@ int main(void) {
             default:
                 return EXIT_SUCCESS;
         }
-
-        getchar();  
-        
+        getchar();        
     }
+
     return EXIT_SUCCESS;
 }
 
@@ -243,8 +240,7 @@ Position createPerson(char* firstName, char* lastName, int birthYear){
 
     p = (Position)malloc(sizeof(Person));
 
-    if (NULL == p)
-    {
+    if (NULL == p){
         printf("Memory allocation failed.\r\n");
         return NULL;
     }
@@ -268,8 +264,7 @@ void printList(Position head){
 
     printf("\n\tList of persons: \n");
 
-    while (p != NULL)
-    {
+    while (p != NULL) {
         printf("\t%s %s %d\r\n", p->firstName, p->lastName, p->birthYear);
         p = p->next;
     }
