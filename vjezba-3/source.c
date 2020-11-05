@@ -23,6 +23,8 @@ void printPerson(Position person);
 void printList(Position head);
 int sortList(Position head);
 void switchPerson(Position first, Position second);
+int writeToFile(Position head, char* fileName);
+int readFromFile(Position head, char* fileName);
 
 int main(void) {
     Person head;
@@ -33,6 +35,7 @@ int main(void) {
 
     char firstName[MAX_NAME];
     char lastName[MAX_NAME];
+    char fileName[MAX_NAME];
     int birthYear = 0;
     int index, del;
     char c;
@@ -119,7 +122,19 @@ int main(void) {
                 sortList(&head);
                 printList(&head);
                 break;
+            case '8':
+                printf("Enter file name: ");
+                scanf("%s", fileName);
 
+                writeToFile(&head, fileName);
+                break;
+            case '9':
+                printf("Enter file name: ");
+                scanf("%s", fileName);
+
+                readFromFile(&head, fileName);
+                printList(&head);
+                break;
             default:
                 return EXIT_SUCCESS;
         }
@@ -129,6 +144,58 @@ int main(void) {
     return EXIT_SUCCESS;
 }
 
+int readFromFile(Position head, char* fileName) {
+    Position p = NULL;
+    FILE* fileStream;
+    char buffer[MAX_NAME*2 + 6];
+    char firstName[MAX_NAME];
+    char lastName[MAX_NAME];
+    int birthYear;
+    Position person;
+
+    p = head->next;
+
+    fileStream = fopen(fileName, "r");
+
+    if (NULL == fileStream) {
+        printf("\t fopen is null @ writeToFile!\n");
+        return -1;
+    }
+
+    while(fgets(buffer, 256, fileStream)) {
+        sscanf(buffer, "%s %s %d", firstName, lastName, &birthYear);
+        person = createPerson(firstName, lastName, birthYear);
+        insertAfter(head, person);
+    }
+
+    fclose(fileStream);
+}
+
+int writeToFile(Position head, char* fileName) {
+    Position p = NULL;
+    p = head->next;
+    FILE* fileStream;
+
+    if (NULL == p) {
+        printf("\t list is null @ writeToFile!\n");
+        return -1;
+    }
+
+    fileStream = fopen(fileName, "w");
+
+    if (NULL == fileStream) {
+        printf("\t fopen is null @ writeToFile!\n");
+        return -1;
+    }
+
+    while (p != NULL) {
+        fprintf(fileStream, "%s %s %d\n", p->firstName, p->lastName, p->birthYear);
+        p = p->next;
+    }
+
+    fclose(fileStream);
+
+}
 void switchPerson(Position a, Position b){
     char a_firstName[MAX_NAME];
     char a_lastName[MAX_NAME];
