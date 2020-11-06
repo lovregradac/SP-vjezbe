@@ -5,9 +5,9 @@
 struct _element;
 typedef struct _element* Pos;
 typedef struct _element {
-	int Coefficient;
-	int Exponent;
-	Pos next;
+    int Coefficient;
+    int Exponent;
+    Pos next;
 } Element;
 
 int readFromFile(char* fileName, Pos head);
@@ -28,20 +28,20 @@ int main() {
     // example:
     //      -2x^-2+1x^1+4x^10
             
-	Element PolinomA;
+    Element PolinomA;
     Element PolinomB;
     Element PolinomC;
 
-	char* fileNameA = "polinom_a.txt";
-	char* fileNameB = "polinom_b.txt";
+    char* fileNameA = "polinom_a.txt";
+    char* fileNameB = "polinom_b.txt";
 
     PolinomA.next = NULL;
     PolinomB.next = NULL;
     PolinomC.next = NULL;
 
-	readFromFile(fileNameA, &PolinomA);
-	printf("\n");
-	readFromFile(fileNameB, &PolinomB);
+    readFromFile(fileNameA, &PolinomA);
+    printf("\n");
+    readFromFile(fileNameB, &PolinomB);
 
     reducePolynomial(&PolinomA);
     reducePolynomial(&PolinomB);
@@ -55,9 +55,9 @@ int main() {
     reducePolynomial(&PolinomC);
     printPolynomial(&PolinomC);
 
-	getchar();
+    getchar();
 
-	return 0;
+    return 0;
 }
 
 void insertElementEnd(Pos head, Pos element) {
@@ -170,18 +170,18 @@ void printPolynomial(Pos head) {
 }
 
 Pos constructElement(int Coefficient, int Exponent) {
-	Pos p = NULL;
-	p = (Pos)malloc(sizeof(Element));
+    Pos p = NULL;
+    p = (Pos)malloc(sizeof(Element));
 
-	p->Coefficient = Coefficient;
-	p->Exponent = Exponent;
-	p->next = NULL;
+    p->Coefficient = Coefficient;
+    p->Exponent = Exponent;
+    p->next = NULL;
 
     return p;
 }
 
 void insertElementBeginning(Pos head, Pos element) {
-	element->next = head->next;
+    element->next = head->next;
     head->next = element;
 }
 
@@ -219,14 +219,14 @@ int parsePolynome(char* polynome){
 
 int readFromFile(char* fileName, Pos head) {
     Pos newElement = NULL;
-	FILE* fileStream = fopen(fileName, "r");
-	char coefficient_sign, exponent_sign;
+    FILE* fileStream = fopen(fileName, "r");
+    char coefficient_sign, exponent_sign;
     int coefficient = 0, exponent = 0;
-	int counter = 0;
-	
-	if (NULL == fileStream) {
-		printf("\t fopen is null @ readFromFile!\n");
-		return -1;
+    int counter = 0;
+    
+    if (NULL == fileStream) {
+        printf("\t fopen is null @ readFromFile!\n");
+        return -1;
     }
 
     while (fscanf(fileStream, "%c%dx^%c%d", &coefficient_sign, &coefficient, &exponent_sign, &exponent) != EOF) {
@@ -240,7 +240,7 @@ int readFromFile(char* fileName, Pos head) {
         insertElementSort(head, newElement);
     }
 
-	fclose(fileStream);
+    fclose(fileStream);
 
-	return 0;
+    return 0;
 }
