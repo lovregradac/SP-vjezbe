@@ -317,6 +317,8 @@ Position createPerson(char* firstName, char* lastName, int birthYear){
     strcpy(p->lastName, lastName);
     p->birthYear = birthYear;
     p->next = NULL;
+
+    return p;
 }
 
 void insertAfter(Position where, Position what){
