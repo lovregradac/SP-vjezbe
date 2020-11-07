@@ -26,7 +26,7 @@ int main() {
     //      A: coefficient
     //      B: exponent
     // example:
-    //      -2x^-2+1x^1+4x^10
+    //      -2x^-2+1x^+1+4x^+10
             
     Element PolinomA;
     Element PolinomB;
