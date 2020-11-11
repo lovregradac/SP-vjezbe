@@ -15,22 +15,18 @@ void insertElementBeginning(Pos head, Pos element);
 void insertElementAfter(Pos afterThis, Pos element);
 void insertElementEnd(Pos head, Pos element);
 void insertElementSort(Pos head, Pos element);
-void reducePolynomial(Pos head);
+void multiplyPolynomials(Pos headA, Pos headB, Pos product);
 void sumPolynomials(Pos headA, Pos headB, Pos sum);
 Pos constructElement(int Coefficient, int Exponent);
 void printPolynomial(Pos head);
+void printPolynomialFormatted(Pos head);
 
 int main() {
-
-    // input format: (+/-)Ax^(+/-)B... (sorted)
-    //      A: coefficient
-    //      B: exponent
-    // example:
-    //      -2x^-2+1x^+1+4x^+10
             
-    Element PolinomA;
-    Element PolinomB;
-    Element PolinomC;
+    Element PolinomA; // input
+    Element PolinomB; // input
+    Element PolinomC; // sum
+    Element PolinomD; // product
 
     char* fileNameA = "polinom_a.txt";
     char* fileNameB = "polinom_b.txt";
@@ -38,26 +34,64 @@ int main() {
     PolinomA.next = NULL;
     PolinomB.next = NULL;
     PolinomC.next = NULL;
+    PolinomD.next = NULL;
 
     readFromFile(fileNameA, &PolinomA);
     printf("\n");
     readFromFile(fileNameB, &PolinomB);
-
-    reducePolynomial(&PolinomA);
-    reducePolynomial(&PolinomB);
     
+    printf("Input A:\t");
     printPolynomial(&PolinomA);
-    printf("\n");
+    printf("\n\t\t");
+    printPolynomialFormatted(&PolinomA);
+    printf("\n\nInput B:\t");
     printPolynomial(&PolinomB);
-    printf("\n");
+    printf("\n\t\t");
+    printPolynomialFormatted(&PolinomB);
 
     sumPolynomials(&PolinomA, &PolinomB, &PolinomC);
-    reducePolynomial(&PolinomC);
+    multiplyPolynomials(&PolinomA, &PolinomB, &PolinomD);
+
+    printf("\n\n\nSum:\t\t");
     printPolynomial(&PolinomC);
+    printf("\n\t\t");
+    printPolynomialFormatted(&PolinomC);
+    printf("\n\nProduct:\t");
+    printPolynomial(&PolinomD);
+    printf("\n\t\t");
+    printPolynomialFormatted(&PolinomD);
 
     getchar();
 
     return 0;
+}
+
+void multiplyPolynomials(Pos headA, Pos headB, Pos product) {
+    Pos p = NULL;
+    Pos q = NULL;
+    Pos newElement = NULL;
+    Pos rememberQ = NULL;
+
+    int counter = 0;
+
+    p = headA->next;
+    q = headB->next;
+    rememberQ = q;
+
+    if (NULL == p || NULL == q) {
+        printf("\t Input is null @ multiplyPolynomials!\n");
+        return;
+    }
+
+    while (p != NULL){
+        while(q != NULL) {
+            newElement = constructElement(p->Coefficient * q->Coefficient, p->Exponent + q->Exponent);
+            insertElementSort(product, newElement);
+            q = q->next;
+        }
+        p = p->next;
+        q = rememberQ;
+    }
 }
 
 void insertElementEnd(Pos head, Pos element) {
@@ -85,14 +119,16 @@ void sumPolynomials(Pos headA, Pos headB, Pos sum) {
     while (p != NULL & q != NULL) {
         if (p->Exponent == q->Exponent) {
 
-            // if exponents are equal, sum the coefficients and store them in a new
-            // element in 'sum'
+            /*
+                If exponents are equal, sum the coefficients and store them in a new
+                element in 'sum'.
+            */
 
             newElement = constructElement(p->Coefficient + q->Coefficient, p->Exponent);
             insertElementEnd(sum, newElement);
         } else if (p->Exponent > q->Exponent) {
 
-            // if p > q, deep copy both (q first)
+            // If p > q, deep copy both (q first).
 
             deepCopyElementA = constructElement(p->Coefficient, p->Exponent);
             deepCopyElementB = constructElement(q->Coefficient, q->Exponent);
@@ -100,7 +136,7 @@ void sumPolynomials(Pos headA, Pos headB, Pos sum) {
             insertElementEnd(sum, deepCopyElementA);
         } else {
 
-            // if p < q, deep copy borth (p first)
+            // If p < q, deep copy borth (p first).
 
             deepCopyElementA = constructElement(p->Coefficient, p->Exponent);
             deepCopyElementB = constructElement(q->Coefficient, q->Exponent);
@@ -113,8 +149,10 @@ void sumPolynomials(Pos headA, Pos headB, Pos sum) {
 
     while (p != NULL) {
 
-        // continue looping through p if it's longer than q and
-        // deep copy the remaining elements
+        /*
+            Continue looping through p if it's longer than q and
+            deep copy the remaining elements.
+        */
 
         deepCopyElementA = constructElement(p->Coefficient, p->Exponent);
         insertElementEnd(sum, deepCopyElementA);
@@ -123,8 +161,10 @@ void sumPolynomials(Pos headA, Pos headB, Pos sum) {
 
     while (q != NULL) {
 
-        // continue looping through q if it's longer than p and
-        // deep copy the remaining elements
+        /*
+            Continue looping through q if it's longer than p and
+            deep copy the remaining elements.
+        */
 
         deepCopyElementB = constructElement(q->Coefficient, q->Exponent);
         insertElementEnd(sum, deepCopyElementB);
@@ -138,31 +178,33 @@ void deleteElement(Pos prevElement) {
     free(targetElement);
 }
 
-void reducePolynomial(Pos head) {
-
-    // if two consecutive elements have equal exponents:
-    //      1. sum coefficients and store them in the first element
-    //      2. delete the second element (with appropriate address management)
-
-    Pos p = NULL;
-    p = head->next;
-
-    while (p->next != NULL) {
-        if (p->Exponent == p->next->Exponent) {
-            p->Coefficient = p->Coefficient + p->next->Coefficient;
-            deleteElement(p);
-            return;
-        }
-        p = p->next;
-    }
-}
-
 void printPolynomial(Pos head) {
     Pos p = NULL;
     p = head->next;
 
     while(p != NULL) {
-        printf("%dx^%d+", p->Coefficient, p->Exponent);
+        printf("%d %d ", p->Coefficient, p->Exponent);
+        p = p->next;
+    }
+
+    return;
+}
+
+void printPolynomialFormatted(Pos head) {
+    Pos p = NULL;
+    p = head->next;
+
+    while(p != NULL) {
+        printf("%dx^%d", p->Coefficient, p->Exponent);
+        
+        if (p->next != NULL) {
+            if (p->next->Coefficient < 0) {
+                printf("-");
+            } else {
+                printf("+");
+            }
+        }
+
         p = p->next;
     }
 
@@ -192,7 +234,7 @@ void insertElementAfter(Pos afterThis, Pos element) {
 
 void insertElementSort(Pos head, Pos element) {
 
-    // auto-sort polynomial elements at input
+    // Auto-sorts polynomial elements at input.
 
     Pos p = NULL;
     p = head;
@@ -204,17 +246,21 @@ void insertElementSort(Pos head, Pos element) {
 
     while (p->next != NULL) {
         if ((element->Exponent) <= (p->next->Exponent)) {
+            /* 
+               If the exponent of the next element is larger than our input exponent,
+               insert input element before the next element / after the current element.
+            */
             insertElementAfter(p, element);
+            return;
+        } else if (element->Exponent == (p->next->Exponent)) {
+            // If exponents are equal, don't insert, sum coefficients.
+            p->next->Coefficient = p->next->Coefficient + element->Coefficient;
             return;
         }
         p = p->next;
     }
 
     insertElementEnd(head, element);
-}
-
-int parsePolynome(char* polynome){
-    return 0;
 }
 
 int readFromFile(char* fileName, Pos head) {
@@ -229,13 +275,7 @@ int readFromFile(char* fileName, Pos head) {
         return -1;
     }
 
-    while (fscanf(fileStream, "%c%dx^%c%d", &coefficient_sign, &coefficient, &exponent_sign, &exponent) != EOF) {
-        if (coefficient_sign == '-')
-            coefficient = coefficient * (-1);
-        
-        if (exponent_sign == '-')
-            exponent = exponent * (-1);
-
+    while (fscanf(fileStream, "%d %d", &coefficient, &exponent) != EOF) { 
         newElement = constructElement(coefficient, exponent);
         insertElementSort(head, newElement);
     }
