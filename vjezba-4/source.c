@@ -191,6 +191,8 @@ void printPolynomial(Pos head) {
 }
 
 void printPolynomialFormatted(Pos head) {
+    // todo: don't print 1s
+
     Pos p = NULL;
     p = head->next;
 
@@ -199,17 +201,24 @@ void printPolynomialFormatted(Pos head) {
         if (p->Coefficient == 0) {
             p = p->next;
             continue;
-        } else if (p->Coefficient < 0) {
-            printf("%d", p->Coefficient);
-        } else  {
+        } else if (p->Coefficient == -1 && p->Exponent != 0) {
+            printf("-");
+        } else if (p->Coefficient == 1 && p->Exponent != 0) {
             if (p != head->next)
+                printf("+");
+        } else {
+            if (p != head->next && p->Coefficient > 0)
                 printf("+");
             printf("%d", p->Coefficient);
         }
 
-        if (p->Exponent < 0) {
+        if (p->Exponent == 0) {
+
+        } else if (p->Exponent == 1) {
+            printf("x");
+        } else if (p->Exponent < 0) {
             printf("x^(%d)", p->Exponent);
-        } else if (p->Exponent > 0) {
+        } else {
             printf("x^%d", p->Exponent);
         }
 
