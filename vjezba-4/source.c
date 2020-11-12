@@ -195,17 +195,26 @@ void printPolynomialFormatted(Pos head) {
     p = head->next;
 
     while(p != NULL) {
-        printf("%dx^%d", p->Coefficient, p->Exponent);
         
-        if (p->next != NULL) {
-            if (p->next->Coefficient < 0) {
-                printf("-");
-            } else {
+        if (p->Coefficient == 0) {
+            p = p->next;
+            continue;
+        } else if (p->Coefficient < 0) {
+            printf("%d", p->Coefficient);
+        } else  {
+            if (p != head->next)
                 printf("+");
-            }
+            printf("%d", p->Coefficient);
+        }
+
+        if (p->Exponent < 0) {
+            printf("x^(%d)", p->Exponent);
+        } else if (p->Exponent > 0) {
+            printf("x^%d", p->Exponent);
         }
 
         p = p->next;
+
     }
 
     return;
@@ -245,7 +254,7 @@ void insertElementSort(Pos head, Pos element) {
     }
 
     while (p->next != NULL) {
-        if ((element->Exponent) <= (p->next->Exponent)) {
+        if ((element->Exponent) < (p->next->Exponent)) {
             /* 
                If the exponent of the next element is larger than our input exponent,
                insert input element before the next element / after the current element.
