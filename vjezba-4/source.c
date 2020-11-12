@@ -191,7 +191,6 @@ void printPolynomial(Pos head) {
 }
 
 void printPolynomialFormatted(Pos head) {
-    // todo: don't print 1s
 
     Pos p = NULL;
     p = head->next;
@@ -223,7 +222,6 @@ void printPolynomialFormatted(Pos head) {
         }
 
         p = p->next;
-
     }
 
     return;
