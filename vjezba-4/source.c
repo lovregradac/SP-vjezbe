@@ -20,6 +20,7 @@ void sumPolynomials(Pos headA, Pos headB, Pos sum);
 Pos constructElement(int Coefficient, int Exponent);
 void printPolynomial(Pos head);
 void printPolynomialFormatted(Pos head);
+void freeElements(Pos head);
 
 int main() {
             
@@ -61,11 +62,28 @@ int main() {
     printf("\n\t\t");
     printPolynomialFormatted(&PolinomD);
 
+    freeElements(&PolinomA);
+    freeElements(&PolinomB);
+    freeElements(&PolinomC);
+    freeElements(&PolinomD);
+    
     getchar();
 
     return 0;
 }
 
+void freeElements(Pos head) {
+    Pos p = NULL;
+    Pos q = NULL;
+
+    p = head->next;
+
+    while (p != NULL) {
+        q = p;
+        p = p->next;
+        free(q);
+    }
+}
 void multiplyPolynomials(Pos headA, Pos headB, Pos product) {
     Pos p = NULL;
     Pos q = NULL;
