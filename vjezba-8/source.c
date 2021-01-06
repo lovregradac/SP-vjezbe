@@ -71,7 +71,15 @@ int main() {
                 continue;
             }
 
-            md(Current, Argument);
+            InsertResult MakeDir = md(Current, Argument);
+
+            if (MakeDir == ALLOCATION_FAILED) {
+                printf("\t malloc failed @ md!\n");
+                continue;
+            } else if (MakeDir == DUPLICATE_DIRECTORY) {
+                printf("\t Duplicate directory!\n");
+                continue;
+            }
         } else if (strcmp(Command, "dir") == 0) {
             PrintDirectories(Current);
         } else if (strcmp(Command, "cd") == 0) {
@@ -86,7 +94,7 @@ int main() {
                 printf("\t Directory doesn't exist!\n");
                 continue;
             }
-            
+
             PushDirectory(&Stog, RequestedDir);
             Current = RequestedDir;
         } else if (strcmp(Command, "cd..") == 0) {
@@ -97,7 +105,6 @@ int main() {
         } else if (strcmp(Command, "exit") == 0) {
             break;
         }
-
     }
 
 	while (Stog.next != NULL)
@@ -140,8 +147,7 @@ void PrintCurrentDir(PositionStack head) {
          Element = FindPreviousDir(head, Element);
     }
 
-    printf(">");
-    
+    printf(">");  
 }
 
 int PrintDirectories(PositionDir current) {
@@ -157,9 +163,9 @@ int PrintDirectories(PositionDir current) {
         Dir = Dir->sibling;
     }
 
-    return 0;
-     
+    return 0;  
 }
+
 PositionDir InsertRecursively(PositionDir current, PositionDir element) {
 	if (current == NULL) return element;
 
@@ -228,7 +234,6 @@ int PushDirectory(PositionStack head, PositionDir dir) {
 	head->next = Element;
 
 	return 0;
-
 }
 
 void DeleteDirectory(PositionDir current) {
