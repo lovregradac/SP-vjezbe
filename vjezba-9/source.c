@@ -40,7 +40,6 @@ int main() {
     PrintMenu();
 
     do {
-
         c = getchar();
 
         switch (c) {
