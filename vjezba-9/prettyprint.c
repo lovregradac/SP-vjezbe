@@ -37,7 +37,7 @@ void PrintMenu();
 int CalculateLevels(Position Tree);
 int XYToIndex(int X, int Y, int Width);
 
-void Populate(Position Node, int Level, int *Matrix, int First, int LevelCount, int X, int Y, int Width);
+void Populate(Position Node, int Level, int *Matrix, int LevelCount, int X, int Y, int Width);
 void PrettyPrint(Position Tree);
 
 int main() {
@@ -387,18 +387,29 @@ int XYToIndex(int X, int Y, int Width) {
     return Y + Width * X;
 }
 
-void Populate(Position Node, int Level, int *Matrix, int First, int LevelCount, int X, int Y, int Width){
+void Populate(Position Node, int Level, int *Matrix, int LevelCount, int X, int Y, int Width){
     // Rekurzivna unkcija za popunjavanje matrice iz stabla.
 
     // Posebni slučaj za korijen stabla.
     if (Level == 1) {
-        Matrix[XYToIndex(0, First, Width)] = Node->value;
-        Populate(Node, Level+1, Matrix, First, LevelCount, 0, First, Width);
+        int FirstY = (Width - 1)/2;
+        Matrix[XYToIndex(0, FirstY, Width)] = Node->value;
+        Populate(Node, Level+1, Matrix, LevelCount, 0, FirstY, Width);
     }
     // Svi ostali elementi.
     else {
-        // Prostorni pomak: varijabla za pozicioniranje elemenata u matrici tako da se ne sijeku.
-        // Ovisi o ukupnom broju razina i o razini u kojoj se rekurzija trenutno nalazi.
+        // Prostorni pomak K: varijabla za pozicioniranje elemenata u matrici tako da se ne sijeku.
+        // Ovisi o ukupnom broju razina i o razini u kojoj se rekurzija trenutno nalazi. Određuje
+        // koordinate lijevog i desnog dijeteta trenutnog elementa.
+
+        /*          (x, y)              L = n (level)
+                    /    \              .
+           (x+K, y-K)    (x+K, y+K)     L = n+1, K=f(n+1)=3 * 2^(L_max - L - 1)
+                .             .         .
+                .             .         .
+                .             .         L = L_max
+        */
+
         int K = ceil(3 * pow(2,LevelCount - Level - 1)); 
 
         // Postavljanje vrijednosti lijevog i desnog dijeteta.
@@ -411,9 +422,9 @@ void Populate(Position Node, int Level, int *Matrix, int First, int LevelCount, 
         // koordinate.
         if (Level != LevelCount + 1) {
             if (Node->left) 
-                Populate(Node->left, Level+1, Matrix, First, LevelCount, X+K, Y-K, Width);
+                Populate(Node->left, Level+1, Matrix, LevelCount, X+K, Y-K, Width);
             if (Node->right) 
-                Populate(Node->right, Level+1, Matrix, First, LevelCount, X+K, Y+K, Width);
+                Populate(Node->right, Level+1, Matrix, LevelCount, X+K, Y+K, Width);
         }
         
         return;
@@ -446,7 +457,7 @@ void PrettyPrint(Position Tree) {
     }
 
     // Popuni matricu s vrijednostima stabla...
-    Populate(Tree, 1, Matrix, First, LevelCount, 0, 0, MatrixWidth);
+    Populate(Tree, 1, Matrix, LevelCount, 0, 0, MatrixWidth);
 
     // Ispiši matricu.
     for (i = 0; i < MatrixHeight; i++) {
