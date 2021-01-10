@@ -39,6 +39,7 @@ int XYToIndex(int X, int Y, int Width);
 
 void Populate(Position Node, int Level, int *Matrix, int LevelCount, int X, int Y, int Width);
 void PrettyPrint(Position Tree);
+void AddLines(int *Matrix, int Width, int Height);
 
 int main() {
 
@@ -460,15 +461,18 @@ void AddLines(int *Matrix, int Width, int Height) {
                 continue;
 
             // Provjeravamo uvjete za nastavak grananja. Ako su zadovoljeni, trenutno polje
-            // označavamo kao liniju.
+            // označavamo kao liniju (-1 ili -2, ovisno o poziciji u odnosu na element ili prethodnu
+            // liniju).
             if (A != 0 && A != -2)
+                // Ako gornje lijevo polje nije prazno niti je /, trenutno polje postaje \.
                 Matrix[XYToIndex(i, y, Width)] = -1;
             if (B != 0 && B != -1)
-                Matrix[XYToIndex(i, y, Width)] = -2;
+                // Ako gornje desno polje nije prazno niti je \, trenutno polje postaje /.
+                Matrix[XYToIndex(i, y, Width)] = -2; 
         }
     }
 
-    // Očisti višak linija na zadnjoj razini.
+    // Očisti višak linija na zadnjoj razini...
     for (i = 0; i < Width; i++) {
         int A = Matrix[XYToIndex(Height-1, i, Width)];
 
@@ -479,6 +483,8 @@ void AddLines(int *Matrix, int Width, int Height) {
 
 void PrettyPrint(Position Tree) {
     // Funkcija za 2D printanje stabla.
+
+    // todo: Padding kod velikih brojeva.
 
     // Priprema: 
     int LevelCount = CalculateLevels(Tree); // Broj razina u 2D stablu.
@@ -497,15 +503,15 @@ void PrettyPrint(Position Tree) {
     // Dodaj linije...
     AddLines(Matrix, MatrixWidth, MatrixHeight);
 
-    // Ispiši matricu.
+    // Ispiši matricu...
     for (i = 0; i < MatrixHeight; i++) {
         for (y = 0; y < MatrixWidth; y++) {
-            int Key = Matrix[XYToIndex(i, y, MatrixWidth)];
+            int Key = Matrix[XYToIndex(i, y, MatrixWidth)]; // Trenutno mjesto u matrici.
 
-            if (Key == -1) printf("\\");
-            else if (Key == -2) printf("/");
-            else if (Key != 0) printf("%d", Key);
-            else printf(" ");
+            if (Key == -1) printf("\\"); // -1 je linija \.
+            else if (Key == -2) printf("/"); // -2 je linija /.
+            else if (Key != 0) printf("%d", Key); // Ostalo osim 0 je element.
+            else printf(" "); // 0 je prazno mjesto.
         }
         printf("\n");
     }
