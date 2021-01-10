@@ -67,7 +67,7 @@ int main() {
                 continue;
 
             // Ako je stablo prazno, umetni novi element na mjestu prvog (Tree) i preskoči
-            // ostatak petlje.
+            // ostatak petlje. Ovo radimo jer nemamo HEAD.
             if (NULL == Tree) {
                 Tree = NewElement;
                 printf("\t Element inserted!\n");
@@ -122,10 +122,18 @@ int main() {
 
             // Pronalaženje i brisanje.
             Position ElementToDelete = FindElement(Tree, ElementValue);
-            if (DeleteElement(Tree, ElementToDelete) == 0) {
+            int Delete = DeleteElement(Tree, ElementToDelete);
+
+            if (Delete == 0) {
                 printf("\t Element deleted!\n");
                 PrettyPrint(Tree);
-            }
+            } else if (Delete == -1) {
+                // DeleteElement vraća -1 ako je izbrisan korijen koji nema djece. U tom slučaju
+                // Tree moramo postavit na NULL jer je stablo sada prazno a nemamo HEAD.
+                Tree = NULL;
+                printf("\t Element deleted!\n");
+            } else
+                printf("\t Deletion failed!\n");
 
             break;
          case 'x':
@@ -169,8 +177,9 @@ int DeleteElement(Position Tree, Position TargetElement) {
     if (TargetElement->left == NULL && TargetElement->right == NULL) {
         if (Tree == TargetElement) {
              // Slučaj ako želimo izbrisati korijen (ne tražimo roditelja, već samo brišemo element).
-             free(TargetElement);
-             return 0;
+             free(Tree);
+             // Šaljem -1 nazad jer sam zakompliciro (main treba postavit Tree na NULL)...
+             return -1;
         } 
         else
             // Slučaj ako želimo izbrisati element koji nije korijen.
@@ -486,6 +495,9 @@ void PrettyPrint(Position Tree) {
 
     // todo: Padding kod velikih brojeva.
 
+    if (NULL == Tree)
+        return;
+    
     // Priprema: 
     int LevelCount = CalculateLevels(Tree); // Broj razina u 2D stablu.
     int MatrixWidth = 3 * pow(2, LevelCount-1) - 1; // Širina zadnje razine u matrici.
