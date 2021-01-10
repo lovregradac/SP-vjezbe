@@ -458,5 +458,6 @@ void PrettyPrint(Position Tree) {
         }
         printf("\n");
     }
-    
+
+    free(Matrix);
 }
