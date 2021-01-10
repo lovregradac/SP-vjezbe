@@ -228,7 +228,7 @@ Position FindElement(Position Tree, int value) {
     // Nastavi rekurziju lijevo ako je vrijednost manja od vrijednosti trenutnog elementa.
     else if (Tree->value > value)
         FindElement(Tree->left, value);
-    // Nastavi rekurziju desno ako je vrijednost manja od vrijednosti trenutnog elementa.
+    // Nastavi rekurziju desno ako je vrijednost veća od vrijednosti trenutnog elementa.
     else
         FindElement(Tree->right, value);
 
