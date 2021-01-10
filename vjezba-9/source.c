@@ -1,7 +1,7 @@
 #define _CRT_SECURE_NO_WARNINGS
 #include <stdio.h>
 #include <stdlib.h>
-#include <math.h>
+#include <math.h>¸
 
 struct _element;
 typedef struct _element * Position;
@@ -31,6 +31,8 @@ void ClearTree(Position Tree);
 
 void PrintMenu();
 
+// Eksperimentalne prettyprint funkcije.
+
 int main() {
 
     Position Tree = NULL; // Prvi element u stablu.
@@ -57,7 +59,7 @@ int main() {
                 continue;
 
             // Ako je stablo prazno, umetni novi element na mjestu prvog (Tree) i preskoči
-            // ostatak petlje.
+            // ostatak petlje. Ovo radimo jer nemamo HEAD.
             if (NULL == Tree) {
                 Tree = NewElement;
                 printf("\t Element inserted!\n");
@@ -110,12 +112,21 @@ int main() {
 
             // Pronalaženje i brisanje.
             Position ElementToDelete = FindElement(Tree, ElementValue);
-            if (DeleteElement(Tree, ElementToDelete) == 0) {
+            int Delete = DeleteElement(Tree, ElementToDelete);
+
+            if (Delete == 0) {
                 printf("\t Element deleted!\n");
-            }
+            } else if (Delete == -1) {
+                // DeleteElement vraća -1 ako je izbrisan korijen koji nema djece. U tom slučaju
+                // Tree moramo postavit na NULL jer je stablo sada prazno a nemamo HEAD.
+                Tree = NULL;
+                printf("\t Element deleted!\n");
+            } else
+                printf("\t Deletion failed!\n");
 
             break;
         }
+    
     } while (c != '5');
 
     ClearTree(Tree);
@@ -152,8 +163,9 @@ int DeleteElement(Position Tree, Position TargetElement) {
     if (TargetElement->left == NULL && TargetElement->right == NULL) {
         if (Tree == TargetElement) {
              // Slučaj ako želimo izbrisati korijen (ne tražimo roditelja, već samo brišemo element).
-             free(TargetElement);
-             return 0;
+             free(Tree);
+             // Šaljem -1 nazad jer sam zakompliciro (main treba postavit Tree na NULL)...
+             return -1;
         } 
         else
             // Slučaj ako želimo izbrisati element koji nije korijen.
@@ -346,6 +358,7 @@ void PrintMenu() {
     printf("2) Print tree\n");
     printf("3) Find element\n");
     printf("4) Delete element\n");
+    printf("5) Izlaz\n");
 }
 
 Position InitElement(int value) {
