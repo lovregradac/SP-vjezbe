@@ -78,6 +78,8 @@ int main() {
                 printf("\t Element inserted!\n");
             }
 
+            PrettyPrint(Tree);
+
             break;
         case '2':
             // Ispisivanje stabla.
@@ -121,6 +123,7 @@ int main() {
             Position ElementToDelete = FindElement(Tree, ElementValue);
             if (DeleteElement(Tree, ElementToDelete) == 0) {
                 printf("\t Element deleted!\n");
+                PrettyPrint(Tree);
             }
 
             break;
@@ -360,6 +363,7 @@ void PrintMenu() {
     printf("3) Find element\n");
     printf("4) Delete element\n");
     printf("x) Prettyprint\n");
+    printf("5) Izlaz\n");
 }
 
 Position InitElement(int value) {
@@ -440,6 +444,39 @@ int CalculateLevels(Position Tree) {
         return max(CalculateLevels(Tree->left), CalculateLevels(Tree->right)) + 1;
 }
 
+void AddLines(int *Matrix, int Width, int Height) {
+    // Funkcija za dodavanje linija u 2D matricu stabla.
+
+    int i, y;
+    for (i = 1; i < Height; i++) {
+        for (y = 1; y < Width-1; y++) {
+            int A = Matrix[XYToIndex(i-1, y-1, Width)]; // Gornje lijevo polje u matrici.
+            int B = Matrix[XYToIndex(i-1, y+1, Width)]; // Gornje desno polje u matrici.
+            int C = Matrix[XYToIndex(i, y, Width)]; // Trenutno polje.
+
+            // 0 je rezervirana za prazna polja, -1 za \ i -2 za /. Ako trenutno polje nije ništa od
+            // toga, preskačemo.
+            if (C != 0 && C != -1 && C != -2) 
+                continue;
+
+            // Provjeravamo uvjete za nastavak grananja. Ako su zadovoljeni, trenutno polje
+            // označavamo kao liniju.
+            if (A != 0 && A != -2)
+                Matrix[XYToIndex(i, y, Width)] = -1;
+            if (B != 0 && B != -1)
+                Matrix[XYToIndex(i, y, Width)] = -2;
+        }
+    }
+
+    // Očisti višak linija na zadnjoj razini.
+    for (i = 0; i < Width; i++) {
+        int A = Matrix[XYToIndex(Height-1, i, Width)];
+
+        if (A == -1 || A == -2)
+            Matrix[XYToIndex(Height-1, i, Width)] = 0;
+    }
+}
+
 void PrettyPrint(Position Tree) {
     // Funkcija za 2D printanje stabla.
 
@@ -447,28 +484,31 @@ void PrettyPrint(Position Tree) {
     int LevelCount = CalculateLevels(Tree); // Broj razina u 2D stablu.
     int MatrixWidth = 3 * pow(2, LevelCount-1) - 1; // Širina zadnje razine u matrici.
     int MatrixHeight = (MatrixWidth + 1)/2; // Visina matrice.
-    int First = (MatrixWidth - 1)/2; // Y koordinata korijena.
     int *Matrix = malloc(sizeof(int) * MatrixWidth * MatrixHeight); // Matrica za realizaciju 2D prikaza.
 
     // Popuni matricu s nulama...
     int i, y;
-    for (i = 0; i < MatrixHeight * MatrixWidth; i++) {
+    for (i = 0; i < MatrixHeight * MatrixWidth; i++)
         Matrix[i] = 0;
-    }
 
     // Popuni matricu s vrijednostima stabla...
     Populate(Tree, 1, Matrix, LevelCount, 0, 0, MatrixWidth);
+
+    // Dodaj linije...
+    AddLines(Matrix, MatrixWidth, MatrixHeight);
 
     // Ispiši matricu.
     for (i = 0; i < MatrixHeight; i++) {
         for (y = 0; y < MatrixWidth; y++) {
             int Key = Matrix[XYToIndex(i, y, MatrixWidth)];
 
-            if (Key != 0) printf("%d", Key);
+            if (Key == -1) printf("\\");
+            else if (Key == -2) printf("/");
+            else if (Key != 0) printf("%d", Key);
             else printf(" ");
         }
         printf("\n");
     }
-
+    
     free(Matrix);
 }
