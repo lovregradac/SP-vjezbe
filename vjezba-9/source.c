@@ -31,8 +31,6 @@ void ClearTree(Position Tree);
 
 void PrintMenu();
 
-// Eksperimentalne prettyprint funkcije.
-
 int main() {
 
     Position Tree = NULL; // Prvi element u stablu.
