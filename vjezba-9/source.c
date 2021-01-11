@@ -80,10 +80,13 @@ int main() {
 
             Position TargetElement = FindElement(Tree, ElementValue);
 
+            if (TargetElement == NULL)
+                continue;
+
             // Provjeri je li vrijednost pronađenog elementa jednaka traženoj vrijednosti. Ako
             // nije, takav element nije pronađen (funkcija je vratila default vrijednost).
             if (TargetElement->value != ElementValue) {
-                printf("Element not found!");
+                printf("\t Element not found!");
                 continue;
             }
 
@@ -204,8 +207,10 @@ Position FindMinElement(Position StartingElement) {
 Position FindElement(Position Tree, int value) {
     // Funkcija za rekurzivnu pretragu binarnog stabla.
 
+    if (Tree == NULL)
+        return NULL;
     // Vrati trenutni element u rekurziji ako je njegova vrijednost jednaka traženoj.
-    if (Tree->value == value)
+    else if (Tree->value == value)
         return Tree;
     // Nastavi rekurziju lijevo ako je vrijednost manja od vrijednosti trenutnog elementa.
     else if (Tree->value > value)
