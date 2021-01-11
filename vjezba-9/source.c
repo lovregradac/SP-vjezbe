@@ -1,7 +1,6 @@
 #define _CRT_SECURE_NO_WARNINGS
 #include <stdio.h>
 #include <stdlib.h>
-#include <math.h>¸
 
 struct _element;
 typedef struct _element * Position;
@@ -19,10 +18,10 @@ Position InitElement(int value);
 Position FindElement(Position Tree, int value);
 Position FindParent(Position Tree, Position Child);
 Position FindMinElement(Position StartingElement);
-Position InsertRecursively(Position CurrentElement, Position TargetElement);
-Position DeleteElement(Position Tree, Position TargetElement);
 
 int DeleteChildFromParent(Position Tree, Position Child);
+Position InsertRecursively(Position CurrentElement, Position TargetElement);
+Position DeleteElement(Position Tree, Position TargetElement);
 int PreOrder(Position Tree);
 
 void ClearTree(Position Tree);
@@ -47,7 +46,7 @@ int main() {
             // Unos novog elementa u stablo.
 
             printf("Enter element value: ");
-            scanf("%d", &ElementValue);
+            scanf("%d", & ElementValue);
 
             // Stvaranje novog elementa.
             Position NewElement = InitElement(ElementValue);
@@ -70,9 +69,8 @@ int main() {
         case '3':
             // Pronalaženje elementa.
 
-            // Unos vrijednosti.
             printf("Enter value: ");
-            scanf("%d", &ElementValue);
+            scanf("%d", & ElementValue);
 
             if (NULL == Tree)
                 // Nema elemenata za tražiti...
@@ -80,24 +78,19 @@ int main() {
 
             Position TargetElement = FindElement(Tree, ElementValue);
 
+            // FindElement failed?
             if (TargetElement == NULL)
                 continue;
 
-            // Provjeri je li vrijednost pronađenog elementa jednaka traženoj vrijednosti. Ako
-            // nije, takav element nije pronađen (funkcija je vratila default vrijednost).
+            // Provjeri je li vrijednost pronađenog elementa jednaka traženoj vrijednosti za svaki
+            // slučaj.
             if (TargetElement->value != ElementValue) {
-                printf("\t Element not found!");
+                printf("Element not found!");
                 continue;
             }
 
-            // Ako je element pronađen, ispiši njegovu adresu i djecu.
-            printf("\t Element address: %p\n", TargetElement);
-
-            if (TargetElement->left != NULL)
-                printf("\t Left child: %d", TargetElement->left->value);
-            if (TargetElement->right != NULL)
-                printf("\t Right child: %d\n", TargetElement->right->value);
-
+            // Ako je element pronađen, ispiši njegovu adresu (bezveze).
+            printf("\t Adresa elementa: %p\n", TargetElement);
             break;
 
         case '4':
@@ -107,12 +100,17 @@ int main() {
                 // Nema elemenata za brisati...
                 continue;
 
-            // Unos.
             printf("Unesi element: ");
             scanf("%d", &ElementValue);
 
-            // Pronalaženje i brisanje.
+            // Pronalaženje elementa.
             Position ElementToDelete = FindElement(Tree, ElementValue);
+
+            // FindElement failed?
+            if (ElementToDelete == NULL)
+                continue;
+                
+            // Brisanje elementa.
             Tree = DeleteElement(Tree, ElementToDelete);
 
             break;
@@ -188,7 +186,6 @@ Position DeleteElement(Position Tree, Position TargetElement) {
             free(Temp);
         }
     }
-
     // Funkcija će uvijek vratiti vrijednost s kojom je prvotno pozvana kako bi korijen ostao
     // sačuvan.
     return Tree;

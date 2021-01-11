@@ -1,7 +1,8 @@
 #define _CRT_SECURE_NO_WARNINGS
 #include <stdio.h>
 #include <stdlib.h>
-#include <math.h>¸
+#include <math.h>
+
 #define max(a,b) (((a) > (b)) ? (a) : (b))
 
 struct _element;
@@ -34,12 +35,13 @@ void PrintMenu();
 
 // Eksperimentalne prettyprint funkcije.
 
-int CalculateLevels(Position Tree);
-int XYToIndex(int X, int Y, int Width);
-
-void Populate(Position Node, int Level, int *Matrix, int LevelCount, int X, int Y, int Width);
 void PrettyPrint(Position Tree);
+void Populate(Position Node, int Level, int *Matrix, int LevelCount, int X, int Y, int Width);
 void AddLines(int *Matrix, int Width, int Height);
+void DisplayMatrix(int *Matrix, int Width, int Height);
+
+int CalculateLevels(Position Tree);
+int GetIndex(int X, int Y, int Width);
 
 int main() {
 
@@ -82,7 +84,6 @@ int main() {
         case '3':
             // Pronalaženje elementa.
 
-            // Unos vrijednosti.
             printf("Enter value: ");
             scanf("%d", & ElementValue);
 
@@ -92,17 +93,18 @@ int main() {
 
             Position TargetElement = FindElement(Tree, ElementValue);
 
+            // FindElement failed?
             if (TargetElement == NULL)
                 continue;
 
-            // Provjeri je li vrijednost pronađenog elementa jednaka traženoj vrijednosti. Ako
-            // nije, takav element nije pronađen (funkcija je vratila default vrijednost).
+            // Provjeri je li vrijednost pronađenog elementa jednaka traženoj vrijednosti za svaki
+            // slučaj.
             if (TargetElement->value != ElementValue) {
                 printf("Element not found!");
                 continue;
             }
 
-            // Ako je element pronađen, ispiši njegovu adresu i djecu.
+            // Ako je element pronađen, ispiši njega i njegova podstabla.
             PrettyPrint(TargetElement);
             break;
 
@@ -113,12 +115,17 @@ int main() {
                 // Nema elemenata za brisati...
                 continue;
 
-            // Unos.
             printf("Unesi element: ");
             scanf("%d", &ElementValue);
 
-            // Pronalaženje i brisanje.
+            // Pronalaženje elementa.
             Position ElementToDelete = FindElement(Tree, ElementValue);
+
+            // FindElement failed?
+            if (ElementToDelete == NULL)
+                continue;
+                
+            // Brisanje elementa.
             Tree = DeleteElement(Tree, ElementToDelete);
 
             PrettyPrint(Tree);
@@ -200,7 +207,6 @@ Position DeleteElement(Position Tree, Position TargetElement) {
             free(Temp);
         }
     }
-
     // Funkcija će uvijek vratiti vrijednost s kojom je prvotno pozvana kako bi korijen ostao
     // sačuvan.
     return Tree;
@@ -230,7 +236,6 @@ Position FindElement(Position Tree, int value) {
     // Nastavi rekurziju desno ako je vrijednost veća od vrijednosti trenutnog elementa.
     else
         FindElement(Tree->right, value);
-
 }
 
 int PreOrder(Position Tree) {
@@ -295,9 +300,10 @@ Position InitElement(int value) {
     return NewElement;
 }
 
-int XYToIndex(int X, int Y, int Width) {
+int GetIndex(int X, int Y, int Width) {
     // Funkcija za pretvaranje koordinata u indeks. Ovako 1D nizom možemo upravljati kao sa 2D
     // matricom.
+
     return Y + Width * X;
 }
 
@@ -307,7 +313,7 @@ void Populate(Position Node, int Level, int *Matrix, int LevelCount, int X, int 
     // Posebni slučaj za korijen stabla.
     if (Level == 1) {
         int FirstY = (Width - 1)/2;
-        Matrix[XYToIndex(0, FirstY, Width)] = Node->value;
+        Matrix[GetIndex(0, FirstY, Width)] = Node->value;
         Populate(Node, Level+1, Matrix, LevelCount, 0, FirstY, Width);
     }
     // Svi ostali elementi.
@@ -328,9 +334,9 @@ void Populate(Position Node, int Level, int *Matrix, int LevelCount, int X, int 
 
         // Postavljanje vrijednosti lijevog i desnog dijeteta.
         if (Node->left) 
-            Matrix[XYToIndex(X+K, Y-K, Width)] = Node->left->value;
+            Matrix[GetIndex(X+K, Y-K, Width)] = Node->left->value;
         if (Node->right) 
-            Matrix[XYToIndex(X+K, Y+K, Width)] = Node->right->value;
+            Matrix[GetIndex(X+K, Y+K, Width)] = Node->right->value;
 
         // Širenje rekurzije na lijevo i desno dijete. Razinu povećavamo za 1 i šaljemo nove
         // koordinate.
@@ -360,9 +366,9 @@ void AddLines(int *Matrix, int Width, int Height) {
     int i, y;
     for (i = 1; i < Height; i++) {
         for (y = 1; y < Width-1; y++) {
-            int A = Matrix[XYToIndex(i-1, y-1, Width)]; // Gornje lijevo polje u matrici.
-            int B = Matrix[XYToIndex(i-1, y+1, Width)]; // Gornje desno polje u matrici.
-            int C = Matrix[XYToIndex(i, y, Width)]; // Trenutno polje.
+            int A = Matrix[GetIndex(i-1, y-1, Width)]; // Gornje lijevo polje u matrici.
+            int B = Matrix[GetIndex(i-1, y+1, Width)]; // Gornje desno polje u matrici.
+            int C = Matrix[GetIndex(i, y, Width)]; // Trenutno polje.
 
             // 0 je rezervirana za prazna polja, -1 za \ i -2 za /. Ako trenutno polje nije ništa od
             // toga, preskačemo.
@@ -374,19 +380,36 @@ void AddLines(int *Matrix, int Width, int Height) {
             // liniju).
             if (A != 0 && A != -2)
                 // Ako gornje lijevo polje nije prazno niti je /, trenutno polje postaje \.
-                Matrix[XYToIndex(i, y, Width)] = -1;
+                Matrix[GetIndex(i, y, Width)] = -1;
             if (B != 0 && B != -1)
                 // Ako gornje desno polje nije prazno niti je \, trenutno polje postaje /.
-                Matrix[XYToIndex(i, y, Width)] = -2; 
+                Matrix[GetIndex(i, y, Width)] = -2; 
         }
     }
 
     // Očisti višak linija na zadnjoj razini...
     for (i = 0; i < Width; i++) {
-        int A = Matrix[XYToIndex(Height-1, i, Width)];
+        int A = Matrix[GetIndex(Height-1, i, Width)];
 
         if (A == -1 || A == -2)
-            Matrix[XYToIndex(Height-1, i, Width)] = 0;
+            Matrix[GetIndex(Height-1, i, Width)] = 0;
+    }
+}
+
+void DisplayMatrix(int *Matrix, int Width, int Height) {
+    // Funkcija za ispisivanje matrice u konzolu.
+
+    int i, y;
+    for (i = 0; i < Height; i++) {
+        for (y = 0; y < Width; y++) {
+            int Key = Matrix[GetIndex(i, y, Width)]; // Trenutno mjesto u matrici.
+
+            if (Key == -1) printf("\\"); // -1 je linija \.
+            else if (Key == -2) printf("/"); // -2 je linija /.
+            else if (Key != 0) printf("%d", Key); // Ostalo osim 0 je element.
+            else printf(" "); // 0 je prazno mjesto.
+        }
+        printf("\n");
     }
 }
 
@@ -410,24 +433,12 @@ void PrettyPrint(Position Tree) {
     for (i = 0; i < MatrixHeight * MatrixWidth; i++)
         Matrix[i] = 0;
 
-    // Popuni matricu s vrijednostima stabla...
+    // Popuni matricu s vrijednostima stabla.
     Populate(Tree, 1, Matrix, LevelCount, 0, 0, MatrixWidth);
-
-    // Dodaj linije...
+    // Dodaj linije koje povezuju čvorove.
     AddLines(Matrix, MatrixWidth, MatrixHeight);
-
-    // Ispiši matricu...
-    for (i = 0; i < MatrixHeight; i++) {
-        for (y = 0; y < MatrixWidth; y++) {
-            int Key = Matrix[XYToIndex(i, y, MatrixWidth)]; // Trenutno mjesto u matrici.
-
-            if (Key == -1) printf("\\"); // -1 je linija \.
-            else if (Key == -2) printf("/"); // -2 je linija /.
-            else if (Key != 0) printf("%d", Key); // Ostalo osim 0 je element.
-            else printf(" "); // 0 je prazno mjesto.
-        }
-        printf("\n");
-    }
-    
+    // Ispiši matricu.
+    DisplayMatrix(Matrix, MatrixWidth, MatrixHeight);
+   
     free(Matrix);
 }
