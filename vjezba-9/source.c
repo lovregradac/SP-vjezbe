@@ -19,10 +19,10 @@ Position InitElement(int value);
 Position FindElement(Position Tree, int value);
 Position FindParent(Position Tree, Position Child);
 Position FindMinElement(Position StartingElement);
-
-int DeleteChildFromParent(Position Tree, Position Child);
 Position InsertRecursively(Position CurrentElement, Position TargetElement);
 Position DeleteElement(Position Tree, Position TargetElement);
+
+int DeleteChildFromParent(Position Tree, Position Child);
 int PreOrder(Position Tree);
 
 void ClearTree(Position Tree);
@@ -47,7 +47,7 @@ int main() {
             // Unos novog elementa u stablo.
 
             printf("Enter element value: ");
-            scanf("%d", & ElementValue);
+            scanf("%d", &ElementValue);
 
             // Stvaranje novog elementa.
             Position NewElement = InitElement(ElementValue);
@@ -72,7 +72,7 @@ int main() {
 
             // Unos vrijednosti.
             printf("Enter value: ");
-            scanf("%d", & ElementValue);
+            scanf("%d", &ElementValue);
 
             if (NULL == Tree)
                 // Nema elemenata za tražiti...
