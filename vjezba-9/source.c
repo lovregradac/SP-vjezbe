@@ -16,10 +16,8 @@ Element;
 
 Position InitElement(int value);
 Position FindElement(Position Tree, int value);
-Position FindParent(Position Tree, Position Child);
 Position FindMinElement(Position StartingElement);
 
-int DeleteChildFromParent(Position Tree, Position Child);
 Position InsertRecursively(Position CurrentElement, Position TargetElement);
 Position DeleteElement(Position Tree, Position TargetElement);
 int PreOrder(Position Tree);

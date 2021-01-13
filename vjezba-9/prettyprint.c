@@ -19,10 +19,8 @@ Element;
 
 Position InitElement(int value);
 Position FindElement(Position Tree, int value);
-Position FindParent(Position Tree, Position Child);
 Position FindMinElement(Position StartingElement);
 
-int DeleteChildFromParent(Position Tree, Position Child);
 Position InsertRecursively(Position CurrentElement, Position TargetElement);
 Position DeleteElement(Position Tree, Position TargetElement);
 int PreOrder(Position Tree);
@@ -124,7 +122,7 @@ int main() {
             // FindElement failed?
             if (ElementToDelete == NULL)
                 continue;
-                
+
             // Brisanje elementa.
             Tree = DeleteElement(Tree, ElementToDelete);
 
@@ -307,48 +305,47 @@ int GetIndex(int X, int Y, int Width) {
     return Y + Width * X;
 }
 
-void Populate(Position Node, int Level, int *Matrix, int LevelCount, int X, int Y, int Width){
-    // Rekurzivna unkcija za popunjavanje matrice iz stabla.
+void Populate(Position Node, int Level, int * Matrix, int LevelCount, int X, int Y, int Width) {
+  // Rekurzivna unkcija za popunjavanje matrice iz stabla.
 
-    // Posebni slučaj za korijen stabla.
-    if (Level == 1) {
-        int FirstY = (Width - 1)/2;
-        Matrix[GetIndex(0, FirstY, Width)] = Node->value;
-        Populate(Node, Level+1, Matrix, LevelCount, 0, FirstY, Width);
+  // Posebni slučaj za korijen stabla.
+  if (Level == 1) {
+    int FirstY = (Width - 1) / 2;
+    Matrix[GetIndex(0, FirstY, Width)] = Node->value;
+    Populate(Node, Level + 1, Matrix, LevelCount, 0, FirstY, Width);
+  }
+  // Svi ostali elementi.
+  else {
+    // Prostorni pomak K: varijabla za pozicioniranje elemenata u matrici tako da se ne sijeku.
+    // Ovisi o ukupnom broju razina i o razini u kojoj se rekurzija trenutno nalazi. Određuje
+    // koordinate lijevog i desnog dijeteta trenutnog elementa.
+
+    /*          (x, y)              L = n (level)
+                /    \              .
+       (x+K, y-K)    (x+K, y+K)     L = n+1, K=f(n+1)=3 * 2^(L_max - L - 1)
+            .             .         .
+            .             .         .
+            .             .         L = L_max
+    */
+    int K = ceil(3 * pow(2, LevelCount - Level - 1));
+
+    // Postavljanje vrijednosti lijevog i desnog dijeteta.
+    if (Node->left)
+        Matrix[GetIndex(X + K, Y - K, Width)] = Node->left->value;
+    if (Node->right)
+        Matrix[GetIndex(X + K, Y + K, Width)] = Node->right->value;
+
+    // Širenje rekurzije na lijevo i desno dijete. Razinu povećavamo za 1 i šaljemo nove
+    // koordinate.
+    if (Level != LevelCount + 1) {
+        if (Node->left)
+            Populate(Node->left, Level + 1, Matrix, LevelCount, X + K, Y - K, Width);
+        if (Node->right)
+            Populate(Node->right, Level + 1, Matrix, LevelCount, X + K, Y + K, Width);
     }
-    // Svi ostali elementi.
-    else {
-        // Prostorni pomak K: varijabla za pozicioniranje elemenata u matrici tako da se ne sijeku.
-        // Ovisi o ukupnom broju razina i o razini u kojoj se rekurzija trenutno nalazi. Određuje
-        // koordinate lijevog i desnog dijeteta trenutnog elementa.
 
-        /*          (x, y)              L = n (level)
-                    /    \              .
-           (x+K, y-K)    (x+K, y+K)     L = n+1, K=f(n+1)=3 * 2^(L_max - L - 1)
-                .             .         .
-                .             .         .
-                .             .         L = L_max
-        */
-
-        int K = ceil(3 * pow(2,LevelCount - Level - 1)); 
-
-        // Postavljanje vrijednosti lijevog i desnog dijeteta.
-        if (Node->left) 
-            Matrix[GetIndex(X+K, Y-K, Width)] = Node->left->value;
-        if (Node->right) 
-            Matrix[GetIndex(X+K, Y+K, Width)] = Node->right->value;
-
-        // Širenje rekurzije na lijevo i desno dijete. Razinu povećavamo za 1 i šaljemo nove
-        // koordinate.
-        if (Level != LevelCount + 1) {
-            if (Node->left) 
-                Populate(Node->left, Level+1, Matrix, LevelCount, X+K, Y-K, Width);
-            if (Node->right) 
-                Populate(Node->right, Level+1, Matrix, LevelCount, X+K, Y+K, Width);
-        }
-        
-        return;
-    }
+    return;
+  }
 }
 
 int CalculateLevels(Position Tree) {
