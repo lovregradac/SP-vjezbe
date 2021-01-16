@@ -8,17 +8,17 @@
 struct _tree;
 typedef struct _tree * PositionTree;
 typedef struct _tree {
-	PositionTree left;
-	PositionTree right;
+    PositionTree left;
+    PositionTree right;
 
-	char data[DATA_SIZE];
+    char data[DATA_SIZE];
 } Tree;
 
 struct _stack;
 typedef struct _stack * PositionStack;
 typedef struct _stack {
-	PositionStack next;
-	PositionTree node;
+    PositionStack next;
+    PositionTree node;
 } Stack;
 
 PositionTree CreateNode(char *data);
@@ -32,21 +32,21 @@ void RecursivePrint(FILE *fp, PositionTree current);
 void ClearTree(PositionTree root);
 
 int main() {
-	PositionTree Root = NULL;
-	char FileName[1024] = { 0 };
-	
-	printf("Enter file name: ");
-	scanf("%s", FileName);
+    PositionTree Root = NULL;
+    char FileName[1024] = { 0 };
+    
+    printf("Enter file name: ");
+    scanf("%s", FileName);
 
-	Root = ReadFromFile(FileName);
+    Root = ReadFromFile(FileName);
 
-	PrintInOrder(Root);
+    PrintInOrder(Root);
     printf("\n");
     PrintInOrderToFile(Root, "infiks.txt");
 
     ClearTree(Root);
 
-	return 0;
+    return 0;
 }
 
 void ClearTree(PositionTree root) {
@@ -86,133 +86,133 @@ int PrintInOrderToFile(PositionTree current, char *filename) {
 }
 
 void PrintInOrder(PositionTree current) {
-	if (NULL == current)
-		return;
+    if (NULL == current)
+        return;
 
-	printf("(");
-	PrintInOrder(current->left);
-	printf("%s", current->data);
-	PrintInOrder(current->right);
-	printf(")");
+    printf("(");
+    PrintInOrder(current->left);
+    printf("%s", current->data);
+    PrintInOrder(current->right);
+    printf(")");
 }
 
 int IsNumber(char *string) {
-	int Number = 0;
+    int Number = 0;
 
-	if (sscanf(string, "%d", &Number) == 1) return 1;
+    if (sscanf(string, "%d", &Number) == 1) return 1;
 
-	return 0;
+    return 0;
 }
 
 PositionTree ReadFromFile(char *filename) {
-	Stack head;
-	FILE *fp = NULL;
-	PositionTree Result = NULL;
+    Stack head;
+    FILE *fp = NULL;
+    PositionTree Result = NULL;
 
-	head.next = NULL;
+    head.next = NULL;
 
-	fp = fopen(filename, "r");
+    fp = fopen(filename, "r");
 
-	if (NULL == fp)
-		return NULL;
+    if (NULL == fp)
+        return NULL;
 
-	while (!feof(fp)) {
-		char Data[DATA_SIZE] = { 0 };
-		PositionTree Node = NULL;
+    while (!feof(fp)) {
+        char Data[DATA_SIZE] = { 0 };
+        PositionTree Node = NULL;
 
-		fscanf(fp, "%s", Data);
+        fscanf(fp, "%s", Data);
 
-		if (strlen(Data) == 0)
-			break;
+        if (strlen(Data) == 0)
+            break;
 
-		Node = CreateNode(Data);
+        Node = CreateNode(Data);
 
-		if (!Node) {
-			fclose(fp);
-			return NULL;
-		}
+        if (!Node) {
+            fclose(fp);
+            return NULL;
+        }
 
-		if (IsNumber(Data))
-			Push(&head, Node);
-		else {
-			Node->right = Pop(&head);
+        if (IsNumber(Data))
+            Push(&head, Node);
+        else {
+            Node->right = Pop(&head);
 
-			if (!Node->right) {
-				printf("\t Postfix fail!\n");
-				fclose(fp);
-				return NULL;
-			}
+            if (!Node->right) {
+                printf("\t Postfix fail!\n");
+                fclose(fp);
+                return NULL;
+            }
 
-			Node->left = Pop(&head);
+            Node->left = Pop(&head);
 
-			if (!Node->left) {
-				printf("\t Postfix fail!\n");
-				fclose(fp);
-				return NULL;
-			}
+            if (!Node->left) {
+                printf("\t Postfix fail!\n");
+                fclose(fp);
+                return NULL;
+            }
 
-			Push(&head, Node);
-		}
+            Push(&head, Node);
+        }
 
-	}
+    }
 
-	fclose(fp);
-	Result = Pop(&head);
+    fclose(fp);
+    Result = Pop(&head);
 
-	if (!Result) {
-		printf("\t File is empty!");
-		return NULL;
-	}
+    if (!Result) {
+        printf("\t File is empty!");
+        return NULL;
+    }
 
-	if (Pop(&head) != NULL) {
-		printf("\t Postfix fail!\n");
-		return NULL;
-	}
+    if (Pop(&head) != NULL) {
+        printf("\t Postfix fail!\n");
+        return NULL;
+    }
 
-	return Result;
+    return Result;
 
 }
 
 PositionTree Pop(PositionStack head) {
-	PositionStack First = head->next;
-	PositionTree Result = NULL;
+    PositionStack First = head->next;
+    PositionTree Result = NULL;
 
-	if (NULL == First)
-		return NULL;
+    if (NULL == First)
+        return NULL;
 
-	head->next = First->next;
-	Result = First->node;
-	free(First);
+    head->next = First->next;
+    Result = First->node;
+    free(First);
 
-	return Result;
+    return Result;
 }
 
 int Push(PositionStack head, PositionTree node) {
-	PositionStack NewNode = NULL;
+    PositionStack NewNode = NULL;
 
-	NewNode = malloc(sizeof(Stack));
+    NewNode = malloc(sizeof(Stack));
 
-	if (NULL == NewNode)
-		return 1;
+    if (NULL == NewNode)
+        return 1;
 
-	NewNode->node = node;
-	NewNode->next = head->next;
-	head->next = NewNode;
+    NewNode->node = node;
+    NewNode->next = head->next;
+    head->next = NewNode;
 
-	return 0;
+    return 0;
 }
 
 PositionTree CreateNode(char *data) {
-	PositionTree Node = NULL;
+    PositionTree Node = NULL;
 
-	Node = (PositionTree)malloc(sizeof(Tree));
+    Node = (PositionTree)malloc(sizeof(Tree));
 
-	if (NULL == Node)
-		return NULL;
+    if (NULL == Node)
+        return NULL;
 
-	strcpy(Node->data, data);
-	Node->left = NULL;
-	Node->right = NULL;
+    strcpy(Node->data, data);
+    Node->left = NULL;
+    Node->right = NULL;
 
-	return Node;
+    return Node;
 }
