@@ -142,7 +142,9 @@ void ReadStudentsFromFile(char * filename, Position * table) {
 
         int key = GetKey(prezime);
         InsertStudent(table[key], newstudent);
-     }
+    }
+
+    fclose(fp);
 }
 
 int GetKey(char * prezime) {
